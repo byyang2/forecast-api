@@ -1,0 +1,13 @@
+# ClusterIP by default. For a test path from the VNet, switch to an internal load balancer:
+#   type: LoadBalancer + annotation service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+apiVersion: v1
+kind: Service
+metadata:
+  name: __APP__
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: __APP__
+  ports:
+    - port: 80
+      targetPort: 8080

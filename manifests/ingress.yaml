@@ -1,0 +1,19 @@
+# Lab test path through the application routing add-on.
+# curl -H "Host: __APP__.gsl-lab.local" http://<app-routing external IP>/
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: __APP__
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+    - host: __APP__.gsl-lab.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: __APP__
+                port:
+                  number: 80
