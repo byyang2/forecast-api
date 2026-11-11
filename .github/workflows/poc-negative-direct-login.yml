@@ -1,0 +1,28 @@
+# Test E. Put this in an ONBOARDED app repo (e.g. gsl-poc-hello) and run it manually.
+# It tries to sign in as the deployment identity WITHOUT the central workflow.
+# Expected: Entra refuses the token (AADSTS700213 / AADSTS70021, no matching federated identity record).
+name: poc-negative-direct-login
+on: workflow_dispatch
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  direct-login:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Attempt sign-in as the deployment identity
+        id: login
+        continue-on-error: true
+        uses: azure/login@v2
+        with:
+          client-id: d5f009a7-0bf2-45f6-b925-dff88232316d
+          tenant-id: 3eedd6fa-6320-412f-a21c-ed95babab9c0
+          subscription-id: 71f85e28-79ff-4a99-8f43-dbc45588d229
+      - name: Expect denial
+        shell: bash
+        run: |
+          if [ "${{ steps.login.outcome }}" = "failure" ]; then
+            echo "PASS: Entra refused a token to a workflow other than the central deploy workflow."
+          else
+            echo "FAIL: direct sign-in succeeded. Check the federated credential subject."; exit 1
+          fi
