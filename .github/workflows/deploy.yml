@@ -1,0 +1,22 @@
+# .github/workflows/deploy.yml  (copy into each app repo; only the paths under `with:` change)
+# Holds no Azure IDs, no secrets, no cluster names. Must reference the central workflow @main:
+# the deployment identity trusts exactly that file on that branch.
+name: deploy
+
+on:
+  push:
+    branches: [ main, master ]   # ssop-container builds from master
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    uses: byyang2/gsl-deploy/.github/workflows/deploy-to-aks.yml@main
+    with:
+      build_context: .
+      dockerfile: ./Dockerfile
+      manifests: ./manifests
+      # runner: gsl-aks-runner   # uncomment if the cluster or registry is private (self-hosted runner in the VNet)
